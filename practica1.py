@@ -14,7 +14,7 @@ class shortUrlSrv(webapp.webApp):
         self.shortUrl = 0
         webapp.webApp.__init__(self, hostname, port)
 
-    def parse(self, request):        
+    def parse(self, request):
         method = request.split(" ")[0]
         resource = request.split(" ")[1]
         if method == "POST":
