@@ -44,18 +44,28 @@ class shortUrlSrv(webapp.webApp):
             html = "<html><body><h1>Recurso no disponible</h1></body></html>"
         return code, html
 
+    # Search for '%3A' and '%2F' and change it for ':' and '/'
+    # Also add http:// if necessary
+    def processUrl(self, url):
+        pos = url.find("%3A")
+        while (pos != -1):
+            url = url[:pos] + ":" + url[pos + 3:]
+            pos = url.find("%3A", pos + 1)
+        pos = url.find("%2F")
+        while (pos != -1):
+            url = url[:pos] + "/" + url[pos + 3:]
+            pos = url.find("%2F", pos + 1)
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://" + url
+        return url
+
     def processPost(self, resource, body):
         url = body.split("=")[1]
         if url == "":
             code = "400 Error"
             html = "<html><body><h1>Error: empty POST</h1></body></html>"
             return code, html
-        if url.startswith("http%3A%2F%2F"):
-            url = "http://" + url[13:]
-        elif url.startswith("https%3A%2F%2F"):
-            url = "https://" + url[14:]
-        else:
-            url = "http://" + url
+        url = self.processUrl(url)
         print "URL:", url
         if url in self.longShortUrls:
             shortUrl = self.longShortUrls[url]
